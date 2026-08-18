@@ -67,8 +67,6 @@
 
     /* --- Avisos ------------------------------------------------------ */
 
-    // A mucha gente el movimiento en pantalla le produce mareo, y lo
-    // configura en su sistema operativo.
     function comportamientoScroll() {
         var prefiereQuieto = window.matchMedia
             && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
