@@ -46,7 +46,7 @@ Crea el rol `up_app` (contraseña `up_app_dev`) y la base `inscripciones_up`.
 psql -U up_app -d inscripciones_up -f database/01_schema.sql
 ```
 
-> ⚠️ Este script hace `DROP TABLE` antes de crear, para poder re-ejecutarse. Sobre una base con datos, los borra.
+> Este script hace `DROP TABLE` antes de crear, para poder re-ejecutarse. Sobre una base con datos, los borra.
 
 **Paso 3** — carreras de ejemplo:
 
