@@ -1,0 +1,24 @@
+﻿# Credenciales: nunca se versionan.
+# La plantilla versionada es config/app.conf.example
+config/app.conf
+.htpasswd
+*.htpasswd
+
+# Material de trabajo interno: el plan de desarrollo, la guia de
+# verificacion y el enunciado del ejercicio. Utiles mientras se
+# construye, pero no forman parte de la entrega.
+docs/
+Consigna de la UP.docx
+
+# Perl
+blib/
+*.bak
+*.old
+*~
+
+# Sistema operativo / editores
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

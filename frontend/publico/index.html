@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Le avisa al navegador que la página tiene los dos temas, para
+         que pinte los controles nativos y la barra de scroll acorde. -->
+    <meta name="color-scheme" content="light dark">
+
+    <title>Inscripción a carreras · Universidad de Palermo</title>
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<noscript>
+    <div class="sin-js">
+        <strong>Esta página necesita JavaScript.</strong>
+        El formulario de inscripción no funciona con JavaScript desactivado.
+        Activalo en tu navegador y volvé a cargar la página.
+    </div>
+</noscript>
+
+<header class="cabecera">
+    <div class="contenedor">
+        <p class="marca">Universidad de Palermo</p>
+        <h1>Inscripción a carreras</h1>
+        <p class="bajada">Completá tus datos y elegí la carrera en la que querés inscribirte.</p>
+    </div>
+</header>
+
+<main class="contenedor">
+
+    <!-- Avisos que no corresponden a un campo puntual: inscripción
+         duplicada, carrera no disponible, caída del servidor. -->
+    <div id="alerta" class="alerta" role="alert" hidden></div>
+
+    <section id="panel-formulario" class="tarjeta">
+        <form id="formulario" novalidate>
+
+            <p class="ayuda">Los campos con <span aria-hidden="true">*</span> son obligatorios.</p>
+
+            <div class="campo">
+                <label for="nombre">Nombre y apellido <span class="req" aria-hidden="true">*</span></label>
+                <input type="text" id="nombre" name="nombre" maxlength="120"
+                       autocomplete="name" required
+                       aria-describedby="error-nombre">
+                <p class="error-campo" id="error-nombre"></p>
+            </div>
+
+            <div class="campo">
+                <label for="email">Email <span class="req" aria-hidden="true">*</span></label>
+                <input type="email" id="email" name="email" maxlength="160"
+                       autocomplete="email" required
+                       aria-describedby="error-email">
+                <p class="error-campo" id="error-email"></p>
+            </div>
+
+            <div class="fila">
+                <div class="campo">
+                    <label for="telefono">Teléfono</label>
+                    <input type="tel" id="telefono" name="telefono" maxlength="40"
+                           autocomplete="tel" inputmode="tel"
+                           placeholder="11-5555-6666"
+                           aria-describedby="error-telefono">
+                    <p class="error-campo" id="error-telefono"></p>
+                </div>
+
+                <div class="campo">
+                    <label for="nacionalidad">Nacionalidad</label>
+                    <input type="text" id="nacionalidad" name="nacionalidad" maxlength="80"
+                           autocomplete="country-name"
+                           aria-describedby="error-nacionalidad">
+                    <p class="error-campo" id="error-nacionalidad"></p>
+                </div>
+            </div>
+
+            <div class="campo">
+                <label for="carrera_id">Carrera <span class="req" aria-hidden="true">*</span></label>
+                <select id="carrera_id" name="carrera_id" required
+                        aria-describedby="error-carrera_id">
+                    <option value="">Cargando carreras…</option>
+                </select>
+                <p class="error-campo" id="error-carrera_id"></p>
+            </div>
+
+            <button type="submit" id="enviar" class="boton">Enviar inscripción</button>
+
+        </form>
+    </section>
+
+    <!-- Reemplaza al formulario cuando la inscripción sale bien. -->
+    <section id="panel-exito" class="tarjeta exito" hidden>
+        <h2 id="exito-titulo">¡Listo!</h2>
+        <p id="exito-detalle"></p>
+        <button type="button" id="otra" class="boton boton-secundario">
+            Inscribirme a otra carrera
+        </button>
+    </section>
+
+</main>
+
+<footer class="pie">
+    <div class="contenedor">
+        <p>Universidad de Palermo · Sistema de inscripciones</p>
+    </div>
+</footer>
+
+<script src="js/inscripcion.js"></script>
+</body>
+</html>

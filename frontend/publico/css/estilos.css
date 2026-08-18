@@ -1,0 +1,341 @@
+/* =====================================================================
+   Inscripción a carreras — hoja de estilos
+
+   Mobile first: las reglas base son las de pantalla chica, y hay un
+   único punto de quiebre en 768px. Es lo que pide la consigna como
+   "responsive básico", y sostenerlo en un solo breakpoint lo mantiene
+   simple de verificar.
+
+   Los colores se definen como variables para poder invertir el tema
+   completo en un solo bloque más abajo.
+   ===================================================================== */
+
+:root {
+    --fondo:         #f4f5f7;
+    --superficie:    #ffffff;
+    --texto:         #1a1d23;
+    --texto-suave:   #5c6472;
+    --borde:         #d7dbe2;
+    --borde-fuerte:  #aeb5c0;
+
+    --acento:        #14448c;
+    --acento-claro:  #1c5cba;
+    --acento-texto:  #ffffff;
+
+    --error:         #b4243a;
+    --error-fondo:   #fdf1f3;
+    --error-borde:   #f0c2ca;
+
+    --exito:         #17724c;
+    --exito-fondo:   #eff9f4;
+    --exito-borde:   #b7e2cd;
+
+    --radio:         8px;
+    --sombra:        0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .04);
+}
+
+/* Respeta la preferencia del sistema. Solo se redefinen los tokens:
+   ninguna regla de más abajo necesita duplicarse. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --fondo:         #14161a;
+        --superficie:    #1c1f25;
+        --texto:         #e8eaed;
+        --texto-suave:   #a2aab8;
+        --borde:         #333842;
+        --borde-fuerte:  #4a515e;
+
+        --acento:        #4d8ef7;
+        --acento-claro:  #6ba3ff;
+        --acento-texto:  #0b1220;
+
+        --error:         #ff8d9f;
+        --error-fondo:   #2a1a1e;
+        --error-borde:   #5c2b35;
+
+        --exito:         #6ddba7;
+        --exito-fondo:   #14241d;
+        --exito-borde:   #2d5442;
+
+        --sombra:        0 1px 3px rgba(0, 0, 0, .4);
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+/* Ojo con el padding de acá: <main> lleva la clase .contenedor, o sea
+   que es el MISMO elemento. Si esta regla usara el atajo `padding`,
+   pisaría el espaciado vertical que define `main` más abajo, porque
+   una clase gana en especificidad contra un selector de etiqueta.
+   Por eso cada regla toca solo su eje: esta el horizontal, `main` el
+   vertical. */
+.contenedor {
+    width: 100%;
+    max-width: 44rem;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Aviso para quien tenga JavaScript desactivado. Va arriba de todo y
+   no se puede pasar por alto: sin JS la aplicación no funciona, y es
+   preferible decirlo a que parezca rota. */
+.sin-js {
+    padding: 1rem;
+    background: var(--error-fondo);
+    color: var(--error);
+    border-bottom: 3px solid var(--error);
+    font-size: .9375rem;
+}
+
+.sin-js strong {
+    display: block;
+}
+
+/* --- Cabecera ------------------------------------------------------ */
+
+.cabecera {
+    background: var(--acento);
+    color: var(--acento-texto);
+    padding: 1.75rem 0 1.5rem;
+}
+
+.marca {
+    margin: 0;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    opacity: .85;
+}
+
+.cabecera h1 {
+    margin: .25rem 0 .5rem;
+    font-size: 1.5rem;
+    line-height: 1.25;
+}
+
+.bajada {
+    margin: 0;
+    opacity: .9;
+    font-size: .9375rem;
+}
+
+/* --- Tarjeta ------------------------------------------------------- */
+
+/* El espacio de arriba separa el contenido de la banda azul de la
+   cabecera. Con poco aire, la tarjeta (o la barra del buscador en el
+   ABM) parece pegada al encabezado y las dos zonas se leen como una
+   sola. Vale también para admin/, que usa esta misma regla. */
+main {
+    padding-top: 2.25rem;
+    padding-bottom: 3rem;
+}
+
+.tarjeta {
+    background: var(--superficie);
+    border: 1px solid var(--borde);
+    border-radius: var(--radio);
+    box-shadow: var(--sombra);
+    padding: 1.25rem;
+}
+
+.ayuda {
+    margin: 0 0 1.25rem;
+    color: var(--texto-suave);
+    font-size: .875rem;
+}
+
+/* --- Campos -------------------------------------------------------- */
+
+.campo {
+    margin-bottom: 1.125rem;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: .375rem;
+    font-weight: 600;
+    font-size: .9375rem;
+}
+
+.req {
+    color: var(--error);
+}
+
+.campo input,
+.campo select {
+    width: 100%;
+    padding: .625rem .75rem;
+    border: 1px solid var(--borde-fuerte);
+    border-radius: 6px;
+    background: var(--superficie);
+    color: var(--texto);
+
+    /* 16px evita que iOS haga zoom al enfocar el campo. */
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+.campo input:focus-visible,
+.campo select:focus-visible,
+.boton:focus-visible {
+    outline: 2px solid var(--acento-claro);
+    outline-offset: 2px;
+}
+
+/* Marca visual del campo rechazado por el servidor. No se usa :invalid
+   porque marcaría los campos vacíos apenas carga la página. */
+.campo input.invalido,
+.campo select.invalido {
+    border-color: var(--error);
+    background: var(--error-fondo);
+}
+
+.error-campo {
+    margin: .375rem 0 0;
+    color: var(--error);
+    font-size: .8125rem;
+    font-weight: 500;
+}
+
+/* Vacío no ocupa lugar: así el formulario no salta al aparecer y
+   desaparecer los mensajes. */
+.error-campo:empty {
+    display: none;
+}
+
+/* --- Botones ------------------------------------------------------- */
+
+.boton {
+    display: block;
+    width: 100%;
+    padding: .75rem 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: var(--acento);
+    color: var(--acento-texto);
+    font-size: 1rem;
+    font-family: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.boton:hover:not(:disabled) {
+    background: var(--acento-claro);
+}
+
+.boton:disabled {
+    opacity: .6;
+    cursor: progress;
+}
+
+.boton-secundario {
+    background: transparent;
+    color: var(--acento);
+    border-color: var(--borde-fuerte);
+}
+
+.boton-secundario:hover:not(:disabled) {
+    background: var(--fondo);
+}
+
+/* --- Avisos -------------------------------------------------------- */
+
+.alerta {
+    margin-bottom: 1.25rem;
+    padding: .875rem 1rem;
+    border: 1px solid var(--error-borde);
+    border-left-width: 4px;
+    border-radius: var(--radio);
+    background: var(--error-fondo);
+    color: var(--error);
+    font-size: .9375rem;
+}
+
+.alerta strong {
+    display: block;
+    margin-bottom: .125rem;
+}
+
+.tarjeta.exito {
+    border-color: var(--exito-borde);
+    border-left: 4px solid var(--exito);
+    background: var(--exito-fondo);
+}
+
+.tarjeta.exito h2 {
+    margin: 0 0 .5rem;
+    color: var(--exito);
+    font-size: 1.25rem;
+}
+
+.tarjeta.exito p {
+    margin: 0 0 1.25rem;
+}
+
+/* --- Pie ----------------------------------------------------------- */
+
+.pie {
+    padding: 1.25rem 0 2rem;
+    color: var(--texto-suave);
+    font-size: .8125rem;
+    text-align: center;
+}
+
+.pie p {
+    margin: 0;
+}
+
+/* =====================================================================
+   Pantallas medianas y grandes.
+   ===================================================================== */
+
+@media (min-width: 768px) {
+
+    .cabecera {
+        padding: 2.5rem 0 2rem;
+    }
+
+    .cabecera h1 {
+        font-size: 1.875rem;
+    }
+
+    main {
+        padding-top: 3.25rem;
+        padding-bottom: 4rem;
+    }
+
+    .tarjeta {
+        padding: 1.75rem;
+    }
+
+    /* Teléfono y nacionalidad son cortos: en pantalla ancha entran
+       lado a lado sin apretarse. */
+    .fila {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 1rem;
+    }
+
+    /* El botón deja de ocupar todo el ancho: a 44rem de ancho un botón
+       completo se ve desproporcionado. */
+    .boton {
+        display: inline-block;
+        width: auto;
+        min-width: 12rem;
+    }
+}

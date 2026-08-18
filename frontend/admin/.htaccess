@@ -1,0 +1,37 @@
+# =====================================================================
+# Proteccion de la parte privada (ABM)
+# ---------------------------------------------------------------------
+# La consigna pide que la zona de administracion no tenga login propio
+# y quede protegida con .htaccess. Al estar en el directorio admin/,
+# Apache aplica esta regla a TODO lo que cuelga de el, incluido
+# admin/api/: los endpoints de alta, baja y modificacion quedan tan
+# protegidos como el HTML.
+#
+# Esa es la razon de proteger el directorio y no cada archivo. Si la
+# proteccion estuviera solo sobre index.html, cualquiera podria pegarle
+# directo a admin/api/alumnos.cgi y borrar alumnos sin pasar por la
+# pantalla.
+#
+# ---------------------------------------------------------------------
+# AuthUserFile necesita una ruta ABSOLUTA, asi que hay que ajustarla al
+# lugar donde quede el proyecto. En Linux seria algo como:
+#
+#     AuthUserFile "/var/www/inscripciones/config/.htpasswd"
+#
+# El archivo vive en config/, que NO esta publicado por Apache (ver
+# httpd-up.conf): solo se publican frontend/publico y frontend/admin.
+# Por eso no hay ninguna URL que permita descargar los hashes.
+#
+# Para crear el archivo o cambiar la clave:
+#
+#     htpasswd -B "config/.htpasswd" admin
+#
+# El -B usa bcrypt, que es lento a proposito: si alguien consiguiera el
+# archivo, probar contrasenas a fuerza bruta le costaria mucho mas que
+# con el MD5 que usa htpasswd por defecto.
+# =====================================================================
+
+AuthType Basic
+AuthName "Administracion de alumnos - Universidad de Palermo"
+AuthUserFile "C:/Ejercicio UP/config/.htpasswd"
+Require valid-user

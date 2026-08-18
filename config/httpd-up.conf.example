@@ -1,0 +1,92 @@
+# =====================================================================
+# Aplicacion de inscripciones a carreras (ejercicio UP)
+# ---------------------------------------------------------------------
+# Copiar este archivo a la carpeta conf/extra/ de Apache como
+# "httpd-up.conf", ajustar las rutas, y agregar al final de httpd.conf:
+#
+#     Include "conf/extra/httpd-up.conf"
+#
+# ---------------------------------------------------------------------
+# Del proyecto solo se publican DOS directorios: frontend/publico y
+# frontend/admin. Todo lo demas -- backend/, config/, database/,
+# tests/, docs/ -- queda fuera del arbol servido, asi que NO hay
+# ninguna URL que llegue a ellos. Eso es preferible a publicar la raiz
+# y despues bloquear lo sensible con reglas: si se olvida una regla, se
+# filtra un archivo; aca no hay nada que olvidar.
+#
+# En particular, config/app.conf lleva la contrasena de la base y
+# config/.htpasswd los hashes del ABM.
+# =====================================================================
+
+# El Alias mas especifico va primero: Apache toma el primero que
+# coincide, y /up matchearia tambien /up/admin.
+Alias /up/admin "C:/Ejercicio UP/frontend/admin"
+Alias /up       "C:/Ejercicio UP/frontend/publico"
+
+# Los archivos estaticos llevan acentos. Sin declarar el charset, el
+# navegador lo adivina segun su configuracion regional y puede mostrar
+# "Diseno Grafico" mal escrito. Las respuestas de los .cgi no dependen
+# de esto: mandan su propio Content-Type.
+AddCharset UTF-8 .html .css .js
+
+# ---------------------------------------------------------------------
+# Cabeceras de seguridad, para toda la aplicacion de una sola vez.
+#
+# Se usa LocationMatch y no los <Directory> de mas abajo para no
+# repetir el bloque, y se limita a /up para no cambiarle el
+# comportamiento al resto de lo que sirva este Apache.
+# ---------------------------------------------------------------------
+<LocationMatch "^/up(/|$)">
+    <IfModule mod_headers.c>
+        # Que el navegador respete el Content-Type declarado en vez de
+        # adivinar el tipo mirando el contenido.
+        Header always set X-Content-Type-Options "nosniff"
+
+        # Impide que la aplicacion se cargue dentro de un iframe ajeno,
+        # que es como se montan los ataques de clickjacking: la victima
+        # cree que hace clic en otra cosa y en realidad esta operando
+        # sobre el ABM, con su sesion ya autenticada.
+        Header always set X-Frame-Options "DENY"
+
+        # No filtrar la URL completa al navegar a sitios externos.
+        Header always set Referrer-Policy "same-origin"
+
+        # Las paginas no usan scripts embebidos, estilos en linea ni
+        # recursos de otros dominios: todo sale de este mismo origen.
+        # Al declararlo, un script inyectado no se ejecutaria ni aunque
+        # lograra entrar en el HTML. Es la segunda barrera detras del
+        # uso de textContent en el frontend.
+        Header always set Content-Security-Policy "default-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    </IfModule>
+</LocationMatch>
+
+<Directory "C:/Ejercicio UP/frontend/publico">
+    # ExecCGI habilita los .cgi de api/.
+    # -Indexes evita que se liste el contenido de un directorio que no
+    # tenga index.html.
+    Options +ExecCGI -Indexes
+    DirectoryIndex index.html
+
+    # La parte publica no necesita .htaccess, y leerlos en cada pedido
+    # cuesta. None tambien impide que alguien cambie la config del
+    # servidor dejando un archivo aca.
+    AllowOverride None
+
+    Require all granted
+</Directory>
+
+<Directory "C:/Ejercicio UP/frontend/admin">
+    Options +ExecCGI -Indexes
+    DirectoryIndex index.html
+
+    # AuthConfig es lo minimo que necesita el .htaccess de la parte
+    # privada para pedir usuario y contrasena. No se habilita All para
+    # no darle al .htaccess mas poder del que necesita.
+    #
+    # Como el .htaccess esta en la raiz de este directorio, cubre
+    # tambien api/: la pantalla y los endpoints quedan igual de
+    # protegidos.
+    AllowOverride AuthConfig
+
+    Require all granted
+</Directory>

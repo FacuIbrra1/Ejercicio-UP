@@ -1,0 +1,19 @@
+# =====================================================================
+# Configuracion de la aplicacion
+# ---------------------------------------------------------------------
+# Copiar este archivo como "app.conf" en el mismo directorio y ajustar
+# los valores. app.conf NO se versiona (ver .gitignore) porque lleva
+# la contrasena de la base.
+#
+#     copy config\app.conf.example config\app.conf     (Windows)
+#     cp   config/app.conf.example config/app.conf     (Linux / macOS)
+#
+# Formato: clave = valor, una por linea. Las lineas que empiezan con #
+# son comentarios.
+# =====================================================================
+
+db_host = 127.0.0.1
+db_port = 5432
+db_name = inscripciones_up
+db_user = up_app
+db_pass = CAMBIAR_ESTA_CONTRASENA

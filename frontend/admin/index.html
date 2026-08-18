@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+
+    <title>Administración de alumnos · Universidad de Palermo</title>
+
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+    <!-- Base compartida con la parte pública: colores, tipografía,
+         campos y botones. La URL sube un nivel porque /up/admin y /up
+         son dos alias hermanos en Apache. -->
+    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<noscript>
+    <div class="sin-js">
+        <strong>Esta página necesita JavaScript.</strong>
+        El panel de administración no funciona con JavaScript desactivado.
+        Activalo en tu navegador y volvé a cargar la página.
+    </div>
+</noscript>
+
+<header class="cabecera">
+    <div class="contenedor contenedor-ancho">
+        <p class="marca">Universidad de Palermo</p>
+        <h1>Administración de alumnos</h1>
+        <p class="bajada">Alta, baja y modificación. Asignación de carreras.</p>
+    </div>
+</header>
+
+<main class="contenedor contenedor-ancho">
+
+    <div id="alerta" class="alerta" role="alert" hidden></div>
+    <div id="aviso" class="aviso" role="status" hidden></div>
+
+    <div class="barra">
+        <div class="buscador">
+            <label for="buscar" class="visualmente-oculto">Buscar alumnos</label>
+            <input type="search" id="buscar" placeholder="Buscar por nombre, email o carrera…"
+                   autocomplete="off">
+        </div>
+        <button type="button" id="nuevo" class="boton">Nuevo alumno</button>
+    </div>
+
+    <p id="resumen" class="resumen" role="status"></p>
+
+    <!-- Arranca oculta y con el cartel de carga a la vista: mostrar
+         una tabla con encabezados y sin filas parecería que no hay
+         alumnos, cuando en realidad todavía no llegaron. -->
+    <div class="tabla-envoltorio" hidden>
+        <table class="tabla">
+            <thead>
+                <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Teléfono</th>
+                    <th scope="col">Nacionalidad</th>
+                    <th scope="col">Carreras</th>
+                    <th scope="col" class="col-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="cuerpo"></tbody>
+        </table>
+    </div>
+
+    <p id="vacio" class="vacio">Cargando alumnos…</p>
+
+</main>
+
+<!-- =================================================================
+     Alta y modificación
+     ================================================================= -->
+<dialog id="dialogo-alumno" class="dialogo">
+    <form id="form-alumno" novalidate>
+        <h2 id="titulo-alumno">Nuevo alumno</h2>
+
+        <div class="campo">
+            <label for="f-nombre">Nombre y apellido <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="f-nombre" maxlength="120" required
+                   aria-describedby="error-f-nombre">
+            <p class="error-campo" id="error-f-nombre"></p>
+        </div>
+
+        <div class="campo">
+            <label for="f-email">Email <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="f-email" maxlength="160" required
+                   aria-describedby="error-f-email">
+            <p class="error-campo" id="error-f-email"></p>
+        </div>
+
+        <div class="fila">
+            <div class="campo">
+                <label for="f-telefono">Teléfono</label>
+                <input type="tel" id="f-telefono" maxlength="40"
+                       aria-describedby="error-f-telefono">
+                <p class="error-campo" id="error-f-telefono"></p>
+            </div>
+
+            <div class="campo">
+                <label for="f-nacionalidad">Nacionalidad</label>
+                <input type="text" id="f-nacionalidad" maxlength="80"
+                       aria-describedby="error-f-nacionalidad">
+                <p class="error-campo" id="error-f-nacionalidad"></p>
+            </div>
+        </div>
+
+        <!-- Solo en el alta: la consigna pide asignarle una carrera a
+             cada alumno, así que no se puede crear uno suelto. En la
+             edición se oculta, porque las carreras se gestionan desde
+             su propio diálogo. -->
+        <div class="campo" id="campo-carrera">
+            <label for="f-carrera_id">Carrera inicial <span class="req" aria-hidden="true">*</span></label>
+            <select id="f-carrera_id" aria-describedby="error-f-carrera_id"></select>
+            <p class="error-campo" id="error-f-carrera_id"></p>
+        </div>
+
+        <p class="error-campo error-dialogo" id="error-alumno"></p>
+
+        <div class="acciones-dialogo">
+            <button type="button" class="boton boton-secundario" data-cerrar>Cancelar</button>
+            <button type="submit" class="boton" id="guardar">Guardar</button>
+        </div>
+    </form>
+</dialog>
+
+<!-- =================================================================
+     Carreras de un alumno
+     ================================================================= -->
+<dialog id="dialogo-carreras" class="dialogo">
+    <h2>Carreras de <span id="carreras-alumno"></span></h2>
+
+    <ul id="lista-carreras" class="lista-carreras"></ul>
+
+    <div class="agregar-carrera">
+        <div class="campo">
+            <label for="f-nueva-carrera">Agregar una carrera</label>
+            <select id="f-nueva-carrera"></select>
+        </div>
+        <button type="button" class="boton" id="agregar-carrera">Agregar</button>
+    </div>
+
+    <p class="error-campo error-dialogo" id="error-carreras"></p>
+
+    <div class="acciones-dialogo">
+        <button type="button" class="boton boton-secundario" data-cerrar>Cerrar</button>
+    </div>
+</dialog>
+
+<!-- =================================================================
+     Confirmación de baja
+     ================================================================= -->
+<dialog id="dialogo-baja" class="dialogo dialogo-angosto">
+    <h2>Dar de baja</h2>
+    <p id="texto-baja"></p>
+    <p class="advertencia">También se eliminan sus inscripciones. La acción no se puede deshacer.</p>
+
+    <p class="error-campo error-dialogo" id="error-baja"></p>
+
+    <div class="acciones-dialogo">
+        <button type="button" class="boton boton-secundario" data-cerrar>Cancelar</button>
+        <button type="button" class="boton boton-peligro" id="confirmar-baja">Dar de baja</button>
+    </div>
+</dialog>
+
+<script src="js/admin.js"></script>
+</body>
+</html>
