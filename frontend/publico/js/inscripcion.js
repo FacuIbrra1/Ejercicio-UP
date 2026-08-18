@@ -1,14 +1,12 @@
 ﻿/* =====================================================================
    Formulario público de inscripción.
 
-   Consume la misma API que el ABM. Toda la validación que hay acá es
-   para dar respuesta inmediata: la que manda es la del servidor, que
-   es la única que no se puede saltear desactivando JavaScript o
-   mandando el pedido con curl.
+   La validación de acá solo da respuesta inmediata. La que manda es
+   la del servidor, que no se puede saltear con curl ni desactivando
+   JavaScript.
 
-   Nada de lo que viene del servidor se inserta con innerHTML. Se usa
-   siempre textContent, así un dato con < o > se muestra como texto y
-   nunca se interpreta como HTML.
+   Nada se inserta con innerHTML: siempre textContent, así un dato con
+   < o > se muestra como texto y no se interpreta como HTML.
    ===================================================================== */
 
 (function () {
@@ -31,9 +29,9 @@
     var MENSAJE_GENERICO =
         'No pudimos procesar tu inscripción. Probá de nuevo en unos minutos.';
 
-    // Hay gente a la que el movimiento en pantalla le produce mareo o
-    // malestar, y lo declara en su sistema operativo. Si lo pidió, el
-    // desplazamiento es instantáneo en vez de animado.
+    // A mucha gente el movimiento en pantalla le produce mareo, y lo
+    // configura en su sistema operativo. Si lo pidió, el
+    // desplazamiento va instantáneo en vez de animado.
     function comportamientoScroll() {
         var prefiereQuieto = window.matchMedia
             && window.matchMedia('(prefers-reduced-motion: reduce)').matches;

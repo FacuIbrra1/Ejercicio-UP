@@ -3,9 +3,8 @@ package UP::DB;
 # =====================================================================
 # Conexion a PostgreSQL.
 #
-# Este modulo es el UNICO lugar del proyecto que sabe que la base es
-# PostgreSQL y que se habla con DBI. Los repositorios reciben el handle
-# ya armado; las capas de arriba ni siquiera lo ven.
+# Es el unico lugar del proyecto que sabe que la base es PostgreSQL y
+# que se usa DBI. Los repositorios reciben el handle ya armado.
 # =====================================================================
 
 use strict;
@@ -19,9 +18,9 @@ my $DBH;
 # ---------------------------------------------------------------------
 # Handle de conexion, reutilizado dentro del mismo proceso.
 #
-# Bajo CGI cada request es un proceso nuevo, asi que en la practica se
-# conecta una vez por request. La cache igual sirve: evita reconectar
-# cuando un service llama a varios repositorios.
+# Bajo CGI cada pedido es un proceso nuevo, asi que se conecta una vez
+# por pedido. Guardarlo evita reconectar si el service llama a varios
+# repositorios.
 # ---------------------------------------------------------------------
 sub handle {
     return $DBH if $DBH && $DBH->ping;
@@ -38,27 +37,26 @@ sub handle {
         $cfg->{db_user},
         $cfg->{db_pass},
         {
-            # Los errores se lanzan como excepciones y se manejan con
-            # eval en la capa de negocio. Sin esto habria que chequear
-            # el retorno de cada llamada a mano.
+            # Los errores se lanzan como excepciones y se atrapan con
+            # eval en la capa de negocio, en vez de chequear el retorno
+            # de cada llamada.
             RaiseError => 1,
             PrintError => 0,
 
-            # Que no escriba nada en STDERR por su cuenta: bajo CGI eso
-            # termina en el error_log de Apache mezclado con todo.
+            # Que no escriba en STDERR por su cuenta: bajo CGI eso va a
+            # parar al error_log de Apache.
             PrintWarn => 0,
 
             AutoCommit => 1,
 
-            # Los textos vienen y van en UTF-8 decodificado, para que
-            # "Diseno Grafico" con tildes no se rompa.
+            # Los textos van y vienen como UTF-8, para que las tildes
+            # no se rompan.
             pg_enable_utf8 => 1,
         }
     );
 
-    # Redundante con pg_enable_utf8 en la mayoria de los casos, pero en
-    # Windows el client_encoding puede arrancar en WIN1252 segun el
-    # locale del proceso, y ahi los acentos se corrompen en silencio.
+    # En Windows el client_encoding puede arrancar en WIN1252 segun el
+    # locale, y ahi los acentos se corrompen sin avisar.
     $DBH->do("SET client_encoding TO 'UTF8'");
 
     return $DBH;
@@ -73,12 +71,11 @@ sub handle {
 #       return $algo;
 #   });
 #
-# Si $codigo muere, hace rollback y vuelve a lanzar el error original,
+# Si $codigo muere, hace rollback y vuelve a lanzar el error original
 # para que la capa de negocio lo pueda clasificar.
 #
-# Si ya hay una transaccion abierta, se suma a ella en lugar de anidar
-# (PostgreSQL no tiene transacciones anidadas reales, y abrir una
-# segunda romperia el rollback de la primera).
+# Si ya hay una transaccion abierta se suma a ella: PostgreSQL no tiene
+# transacciones anidadas, y abrir una segunda romperia el rollback.
 # ---------------------------------------------------------------------
 sub transaccion {
     my ( $class, $codigo ) = @_;

@@ -3,13 +3,11 @@ package UP::Service::Validacion;
 # =====================================================================
 # Validacion y normalizacion de los datos que llegan de afuera.
 #
-# Esta es la validacion que manda. La del formulario HTML existe solo
-# para dar feedback rapido: se puede saltear con curl, con la consola
-# del navegador o desactivando JavaScript, asi que no confie en ella.
+# Esta es la validacion que manda. La del formulario HTML solo da
+# respuesta rapida, y se saltea con curl o desactivando JavaScript.
 #
-# Los errores se acumulan y se devuelven todos juntos, en vez de cortar
-# en el primero: si alguien manda tres campos mal, que los vea los tres
-# de una y no de a uno por envio.
+# Los errores se juntan y se devuelven todos a la vez: si alguien
+# manda tres campos mal, que los vea los tres de una.
 # =====================================================================
 
 use strict;
@@ -69,8 +67,9 @@ sub validar_alumno {
     }
 
     # --- email -------------------------------------------------------
-    # Alcanza para descartar lo groseramente invalido. Intentar validar un email "del todo" con
-    # una expresion regular es un pozo sin fondo, y termina rechazando direcciones legitimas.
+    # Alcanza para descartar lo groseramente invalido. Validar un email
+    # "del todo" con una expresion regular es un pozo sin fondo, y
+    # termina rechazando direcciones legitimas.
     $limpio{email} = _limpiar( $datos->{email} );
     if ( !defined $limpio{email} ) {
         $error{email} = 'El email es obligatorio.';
@@ -135,9 +134,9 @@ sub validar_id {
     $valor =~ s/^\s+|\s+$//g;
     return undef unless $valor =~ /^[1-9][0-9]*$/;
 
-    # Limite de un integer de PostgreSQL. Sin esto, un id absurdo
-    # llegaria a la base y volveria como error de rango, no como un
-    # "no encontrado" que es lo que corresponde.
+    # Limite de un integer de PostgreSQL. Sin esto, un id enorme
+    # llegaria a la base y volveria como error de rango en vez de como
+    # "no encontrado", que es lo que corresponde.
     return undef if $valor > 2147483647;
 
     return $valor + 0;

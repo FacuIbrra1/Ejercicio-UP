@@ -6,11 +6,9 @@ package UP::Error;
 # La capa de servicios lanza estos errores con die; la capa web los
 # atrapa con eval y los convierte en una respuesta JSON.
 #
-# A proposito NO sabe nada de HTTP: no tiene status code ni nada
-# parecido. La traduccion codigo -> HTTP vive en UP::Web::Api, que es
-# la unica capa que deberia saber que existe el protocolo. Asi este
-# mismo error sirve igual si manana esto se expone por linea de
-# comandos o por una cola de mensajes.
+# No sabe nada de HTTP: no tiene status code. La traduccion
+# codigo -> HTTP vive en UP::Web::Api. Asi este mismo error sirve
+# igual si manana esto se expone por linea de comandos.
 #
 # Codigos posibles:
 #   VALIDACION           datos mal formados (trae el detalle por campo)
@@ -48,19 +46,16 @@ sub mensaje { return $_[0]->{mensaje} }
 sub campos  { return $_[0]->{campos} }
 
 # ---------------------------------------------------------------------
-# Es esto un error de negocio, o una excepcion cualquiera de Perl?
+# Es un error de negocio, o una excepcion cualquiera de Perl?
 #
-# Importa distinguirlos: un UP::Error se le muestra al usuario tal
-# cual, mientras que cualquier otra excepcion es un bug o una falla de
-# infraestructura, y de esa solo se muestra un mensaje generico.
+# Hay que distinguirlos: el UP::Error se le muestra al usuario tal
+# cual; cualquier otra excepcion es un bug, y de esa solo sale un
+# mensaje generico.
 #
-# Usa blessed() y no un eval defensivo alrededor de isa() porque un
-# eval, aun exitoso, limpia $@. Eso romperia el uso natural de esta
-# funcion:
+# Usa blessed() y no un eval alrededor de isa() porque un eval, aunque
+# salga bien, limpia $@. Con eval, esto no funcionaria:
 #
 #     if (UP::Error->es($@)) { $@->codigo }   # $@ ya estaria vacio
-#
-# Con blessed() no hay eval de por medio y $@ queda intacto.
 # ---------------------------------------------------------------------
 sub es {
     my ( $class, $cosa ) = @_;
@@ -74,12 +69,11 @@ sub es {
 #       '23505' => [ 'EMAIL_DUPLICADO', 'Ya existe...' ],
 #   });
 #
-# Lo que no este en el mapa se vuelve a lanzar tal cual: es un bug o
-# una falla de infraestructura, y disfrazarlo de error de negocio solo
-# lo esconderia.
+# Lo que no este en el mapa se vuelve a lanzar tal cual: disfrazar un
+# bug de error de negocio solo lo esconde.
 #
-# Recibe el SQLSTATE ya extraido y no el handle de la base, para no
-# meter DBI dentro de esta clase.
+# Recibe el SQLSTATE ya extraido y no el handle, para no meter DBI
+# dentro de esta clase.
 # ---------------------------------------------------------------------
 sub desde_sqlstate {
     my ( $class, $estado, $error_original, $mapa ) = @_;

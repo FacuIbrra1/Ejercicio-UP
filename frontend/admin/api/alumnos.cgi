@@ -3,9 +3,9 @@
 # =====================================================================
 # /up/admin/api/alumnos.cgi        ABM de alumnos
 #
-# Zona privada: el .htaccess del directorio admin/ la protege. Este
-# script no chequea credenciales por su cuenta, es Apache quien no lo
-# ejecuta si el pedido no esta autenticado.
+# Zona privada, protegida por el .htaccess de admin/. Este script no
+# chequea credenciales: si el pedido no esta autenticado, Apache ni
+# siquiera lo ejecuta.
 #
 #   GET     ?id=N   ficha de un alumno con sus inscripciones
 #   GET             listado completo

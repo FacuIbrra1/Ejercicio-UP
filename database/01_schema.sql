@@ -14,7 +14,7 @@ SET client_encoding TO 'UTF8';
 
 -- ---------------------------------------------------------------------
 -- La app guarda nombres con tildes y enies. Si la base no es UTF8 se
--- corrompen, y conviene enterarse ahora y no cuando falle una insercion.
+-- corrompen, y es mejor enterarse ahora que cuando falle una insercion.
 -- ---------------------------------------------------------------------
 DO $$
 DECLARE
@@ -73,13 +73,13 @@ CREATE TABLE alumno (
     creado_en    TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
     CONSTRAINT ck_alumno_nombre CHECK (btrim(nombre) <> ''),
-    -- Validacion deliberadamente laxa: descarta lo groseramente invalido
-    -- sin pelearse con los casos raros pero legitimos.
+    -- Chequeo laxo: descarta lo groseramente invalido sin pelearse
+    -- con las direcciones raras pero legitimas.
     CONSTRAINT ck_alumno_email  CHECK (email ~ '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$')
 );
 
--- Sobre lower(email): "Juan@UP.edu.ar" y "juan@up.edu.ar" son la misma
--- persona. Este indice es el que dispara el error EMAIL_DUPLICADO.
+-- El lower() hace que "Juan@UP.edu.ar" y "juan@up.edu.ar" sean la
+-- misma persona. Este indice es el que dispara EMAIL_DUPLICADO.
 CREATE UNIQUE INDEX ux_alumno_email ON alumno (lower(email));
 
 COMMENT ON TABLE alumno IS 'Personas registradas. Una fila por persona, sin importar a cuantas carreras se anote.';
@@ -105,8 +105,8 @@ CREATE TABLE inscripcion (
     CONSTRAINT fk_inscripcion_carrera
         FOREIGN KEY (carrera_id) REFERENCES carrera (id) ON DELETE RESTRICT,
 
-    -- Esta es la regla central del ejercicio: el mismo alumno no puede
-    -- inscribirse dos veces a la misma carrera. Dispara ALUMNO_YA_INSCRIPTO.
+    -- La regla central del ejercicio: el mismo alumno no puede
+    -- inscribirse dos veces a la misma carrera.
     CONSTRAINT ux_inscripcion_alumno_carrera UNIQUE (alumno_id, carrera_id)
 );
 

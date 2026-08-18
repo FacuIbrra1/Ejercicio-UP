@@ -1,16 +1,12 @@
 /* =====================================================================
    ABM de alumnos.
 
-   Consume los mismos endpoints que la parte pública, más los tres que
-   solo existen acá (POST/PUT/DELETE de alumnos y asignación de
-   carreras). No hay lógica de negocio en este archivo: cada acción es
-   una llamada a la API, y las reglas -- duplicados, validación -- las
-   resuelve el servidor.
+   No hay lógica de negocio acá: cada acción es una llamada a la API,
+   y las reglas (duplicados, validación) las resuelve el servidor.
 
-   Como en la parte pública, todo dato que llega del servidor entra por
-   textContent. En un ABM importa todavía más: los nombres y emails los
-   escribió otra persona, así que son justamente el vector por donde
-   entraría un XSS almacenado.
+   Todo dato que llega del servidor entra por textContent. En un ABM
+   importa más todavía: los nombres y emails los escribió otra
+   persona, y son la vía por donde entraría un XSS almacenado.
    ===================================================================== */
 
 (function () {
@@ -71,8 +67,8 @@
 
     /* --- Avisos ------------------------------------------------------ */
 
-    // Hay gente a la que el movimiento en pantalla le produce mareo o
-    // malestar, y lo declara en su sistema operativo.
+    // A mucha gente el movimiento en pantalla le produce mareo, y lo
+    // configura en su sistema operativo.
     function comportamientoScroll() {
         var prefiereQuieto = window.matchMedia
             && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -112,8 +108,7 @@
         $('error-alumno').textContent = '';
     }
 
-    // Traduce la respuesta de error del servidor a lo que se muestra.
-    // Devuelve el texto general, o '' si todo fue a parar a los campos.
+    // Traduce el error del servidor a lo que se muestra en pantalla.
     function pintarError(resultado, destinoGeneral) {
         var error = (resultado.cuerpo && resultado.cuerpo.error) || {};
 
@@ -136,10 +131,9 @@
 
         var texto = error.mensaje || MENSAJE_GENERICO;
 
-        // EMAIL_DUPLICADO señala un campo concreto, así que el mensaje
-        // va ahí y NO se repite abajo del diálogo: el mismo texto dos
-        // veces en la misma pantalla no agrega información y hace
-        // pensar que son dos problemas distintos.
+        // EMAIL_DUPLICADO apunta a un campo concreto, así que el
+        // mensaje va ahí y no se repite abajo. El mismo texto dos
+        // veces hace pensar que son dos problemas distintos.
         if (error.codigo === 'EMAIL_DUPLICADO' && $('f-email')) {
             var campoEmail = $('f-email');
             campoEmail.classList.add('invalido');
@@ -151,9 +145,8 @@
             return;
         }
 
-        // El resto de los errores no corresponden a ningún campo
-        // (carrera no disponible, alumno inexistente, fallo interno),
-        // así que solo tienen el lugar general.
+        // El resto de los errores no son de ningún campo en
+        // particular, así que van al lugar general.
         if (destinoGeneral) { destinoGeneral.textContent = texto; }
     }
 
@@ -572,8 +565,8 @@
 
     /* --- Cableado --------------------------------------------------------- */
 
-    // Delegación: los botones de cada fila se crean y se destruyen en
-    // cada pintado, así que el listener va en el tbody y no en cada uno.
+    // Los botones de cada fila se crean y se destruyen en cada
+    // pintado, así que el listener va en el tbody y no en cada botón.
     cuerpo.addEventListener('click', function (evento) {
         var boton = evento.target.closest('button[data-accion]');
         if (!boton) { return; }

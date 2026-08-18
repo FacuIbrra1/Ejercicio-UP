@@ -1,13 +1,12 @@
 /* =====================================================================
    Inscripción a carreras — hoja de estilos
 
-   Mobile first: las reglas base son las de pantalla chica, y hay un
-   único punto de quiebre en 768px. Es lo que pide la consigna como
-   "responsive básico", y sostenerlo en un solo breakpoint lo mantiene
-   simple de verificar.
+   Mobile first: las reglas base son las de pantalla chica y hay un
+   único punto de quiebre, en 768px. Con un solo breakpoint es fácil
+   de verificar.
 
-   Los colores se definen como variables para poder invertir el tema
-   completo en un solo bloque más abajo.
+   Los colores van en variables para poder invertir el tema completo
+   en un solo bloque, más abajo.
    ===================================================================== */
 
 :root {
@@ -76,12 +75,10 @@ body {
     line-height: 1.55;
 }
 
-/* Ojo con el padding de acá: <main> lleva la clase .contenedor, o sea
-   que es el MISMO elemento. Si esta regla usara el atajo `padding`,
-   pisaría el espaciado vertical que define `main` más abajo, porque
-   una clase gana en especificidad contra un selector de etiqueta.
-   Por eso cada regla toca solo su eje: esta el horizontal, `main` el
-   vertical. */
+/* Ojo con el padding: <main> lleva la clase .contenedor, así que son
+   el mismo elemento. Si esta regla usara el atajo `padding`, pisaría
+   el espaciado vertical de `main` — una clase le gana a un selector
+   de etiqueta. Por eso cada regla toca solo su eje. */
 .contenedor {
     width: 100%;
     max-width: 44rem;
@@ -90,9 +87,8 @@ body {
     padding-right: 1rem;
 }
 
-/* Aviso para quien tenga JavaScript desactivado. Va arriba de todo y
-   no se puede pasar por alto: sin JS la aplicación no funciona, y es
-   preferible decirlo a que parezca rota. */
+/* Aviso para quien tenga JavaScript desactivado. Sin JS la
+   aplicación no funciona, y es mejor decirlo que parecer rota. */
 .sin-js {
     padding: 1rem;
     background: var(--error-fondo);
@@ -136,10 +132,9 @@ body {
 
 /* --- Tarjeta ------------------------------------------------------- */
 
-/* El espacio de arriba separa el contenido de la banda azul de la
-   cabecera. Con poco aire, la tarjeta (o la barra del buscador en el
-   ABM) parece pegada al encabezado y las dos zonas se leen como una
-   sola. Vale también para admin/, que usa esta misma regla. */
+/* El espacio de arriba despega el contenido de la banda azul. Sin
+   aire, la tarjeta parece pegada al encabezado. El ABM usa esta
+   misma regla. */
 main {
     padding-top: 2.25rem;
     padding-bottom: 3rem;

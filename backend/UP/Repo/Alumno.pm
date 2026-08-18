@@ -3,8 +3,8 @@ package UP::Repo::Alumno;
 # =====================================================================
 # Acceso a datos de la tabla "alumno".
 #
-# Solo SQL, siempre con placeholders. Ningun valor se interpola en la
-# sentencia: eso es lo que hace imposible la inyeccion SQL.
+# Solo SQL, siempre con placeholders. Ningun valor se pega dentro de
+# la sentencia, y por eso la inyeccion SQL no es posible.
 # =====================================================================
 
 use strict;
@@ -24,11 +24,10 @@ my $JSON = JSON::PP->new;
 # ---------------------------------------------------------------------
 # Listado completo, cada alumno con sus carreras.
 #
-# Las carreras se agregan en la misma consulta con json_agg en lugar de
-# hacer una consulta por alumno: con N alumnos eso serian N+1 viajes a
-# la base.
+# json_agg trae las carreras en la misma consulta. La alternativa
+# serian N+1 viajes a la base: uno por los alumnos y uno por cada uno.
 #
-# El FILTER es necesario por el LEFT JOIN: sin el, un alumno sin
+# El FILTER hace falta por el LEFT JOIN: sin el, un alumno sin
 # inscripciones daria [null] en vez de [].
 # ---------------------------------------------------------------------
 sub listar {
@@ -61,8 +60,8 @@ sub listar {
 
     my $filas = $dbh->selectall_arrayref( $sql, { Slice => {} } );
 
-    # El JSON se decodifica aca para que las capas de arriba reciban
-    # estructuras Perl y nunca sepan que la base uso json_agg.
+    # Se decodifica aca para que las capas de arriba reciban
+    # estructuras Perl y no se enteren de que la base uso json_agg.
     $_->{carreras} = $JSON->decode( $_->{carreras} ) for @$filas;
 
     return $filas;
@@ -84,8 +83,8 @@ sub buscar_por_id {
 # ---------------------------------------------------------------------
 # Un alumno por email, sin distinguir mayusculas.
 #
-# El lower() del WHERE coincide con el del indice unico ux_alumno_email,
-# asi que esta busqueda lo usa en vez de recorrer la tabla.
+# El lower() es el mismo que usa el indice ux_alumno_email, asi que la
+# busqueda lo aprovecha en vez de recorrer la tabla entera.
 # ---------------------------------------------------------------------
 sub buscar_por_email {
     my ( $dbh, $email ) = @_;
@@ -98,10 +97,10 @@ sub buscar_por_email {
 }
 
 # ---------------------------------------------------------------------
-# Igual que buscar_por_email pero excluyendo un id.
+# Igual que buscar_por_email pero salteando un id.
 #
-# Sirve para la modificacion del ABM: al editar a alguien, su propio
-# email no puede contar como duplicado.
+# La usa la edicion del ABM: el email propio del alumno no puede
+# contar como duplicado.
 # ---------------------------------------------------------------------
 sub buscar_por_email_excepto {
     my ( $dbh, $email, $id_excluido ) = @_;
@@ -131,14 +130,12 @@ sub insertar {
 }
 
 # ---------------------------------------------------------------------
-# Modificacion. Devuelve la cantidad de filas afectadas: 0 significa
-# que el id no existia.
+# Modificacion. Devuelve cuantas filas cambio: 0 significa que el id
+# no existia.
 #
-# El "0 +" no es decorativo. Cuando no se afecta ninguna fila, DBI no
-# devuelve 0 sino la cadena "0E0", que vale cero en contexto numerico
-# pero es VERDADERA en contexto booleano. Sin normalizarla, un
-# "unless $filas" nunca se cumpliria y una baja de algo inexistente
-# pasaria por exitosa.
+# Ojo con el "0 +". Cuando no toca ninguna fila, DBI devuelve la
+# cadena "0E0", que vale cero pero es verdadera como booleano. Sin
+# convertirla, un "unless $filas" nunca se cumple.
 # ---------------------------------------------------------------------
 sub actualizar {
     my ( $dbh, $id, $datos ) = @_;

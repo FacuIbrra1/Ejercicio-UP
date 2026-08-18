@@ -57,22 +57,19 @@ sub inscribir {
                 $alumno_id    = $existente->{id};
                 $alumno_nuevo = 0;
 
-                # Chequeo previo, solo para poder dar un mensaje que
-                # nombre la carrera. La garantia real esta en la
-                # constraint, mas abajo.
+                # Chequeo previo, solo para poder nombrar la carrera en
+                # el mensaje. La garantia esta en la constraint.
                 if ( UP::Repo::Inscripcion::existe( $dbh, $alumno_id, $carrera->{id} ) ) {
                     UP::Error->lanzar( 'ALUMNO_YA_INSCRIPTO',
                         "Ya hay una inscripción a $carrera->{nombre} con el email $limpios->{email}."
                     );
                 }
 
-                # Los datos de contacto del alumno existente NO se
-                # pisan con los que vengan del formulario. Es
-                # deliberado: el formulario publico no pide ninguna
-                # prueba de que sos el dueno de ese email, asi que
-                # permitir la sobreescritura dejaria que cualquiera que
-                # conozca tu direccion te cambie el telefono. Los datos
-                # se corrigen desde el ABM.
+                # Los datos del alumno existente no se pisan con los
+                # del formulario. El formulario publico no pide ninguna
+                # prueba de que el email es tuyo, asi que cualquiera
+                # que lo conozca podria cambiarte el telefono. Para
+                # corregir datos esta el ABM.
             }
             else {
                 $alumno_nuevo = 1;

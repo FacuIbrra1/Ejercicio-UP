@@ -3,9 +3,9 @@
 # =====================================================================
 # Lectura de config/app.conf
 #
-# No usa modulos de configuracion externos a proposito: el formato es
-# clave=valor y el parseo entra en veinte lineas, asi que agregar una
-# dependencia solo complicaria la instalacion para quien evalue esto.
+# No usa ningun modulo externo: el formato es clave=valor y el parseo
+# entra en veinte lineas. Una dependencia mas solo complicaria la
+# instalacion.
 # =====================================================================
 
 use strict;
@@ -14,10 +14,10 @@ use warnings;
 use File::Basename qw(dirname);
 use File::Spec;
 
-# Raiz del proyecto, deducida de la ubicacion de este archivo:
+# Raiz del proyecto, deducida de donde esta este archivo:
 #   <raiz>/backend/UP/Config.pm  ->  subir dos niveles
-# Se calcula asi, y no con el directorio de trabajo, porque un CGI
-# corre con el cwd que le pone Apache, que no es el del proyecto.
+# No se usa el directorio de trabajo porque un CGI corre con el cwd
+# que le pone Apache, que no es el del proyecto.
 my $RAIZ = File::Spec->rel2abs(
     File::Spec->catdir( dirname(__FILE__), File::Spec->updir, File::Spec->updir )
 );

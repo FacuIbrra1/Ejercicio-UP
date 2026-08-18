@@ -48,10 +48,10 @@ sub buscar_por_id {
 # ---------------------------------------------------------------------
 # Ya existe este alumno en esta carrera?
 #
-# Es la consulta que permite devolver ALUMNO_YA_INSCRIPTO con un mensaje
-# claro. La garantia real contra duplicados no es esta consulta sino la
-# constraint ux_inscripcion_alumno_carrera: entre este SELECT y el
-# INSERT posterior puede colarse otro proceso.
+# Sirve para devolver ALUMNO_YA_INSCRIPTO con un mensaje claro, pero
+# no es la garantia: entre este SELECT y el INSERT que viene despues
+# puede colarse otro proceso. De eso se ocupa la constraint
+# ux_inscripcion_alumno_carrera.
 # ---------------------------------------------------------------------
 sub existe {
     my ( $dbh, $alumno_id, $carrera_id ) = @_;
@@ -83,12 +83,10 @@ sub insertar {
 }
 
 # ---------------------------------------------------------------------
-# Baja. Devuelve filas afectadas: 0 significa que el id no existia.
+# Baja. Devuelve cuantas filas borro: 0 significa que el id no existia.
 #
-# El "0 +" normaliza el "0E0" que devuelve DBI cuando no afecta filas:
-# esa cadena vale cero en contexto numerico pero es VERDADERA como
-# booleano, asi que sin esto un borrado de algo inexistente pasaria
-# por exitoso.
+# El "0 +" convierte el "0E0" de DBI, que vale cero pero es verdadero
+# como booleano. Ver el comentario en Repo/Alumno.pm.
 # ---------------------------------------------------------------------
 sub borrar {
     my ( $dbh, $id ) = @_;

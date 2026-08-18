@@ -3,14 +3,12 @@ package UP::Web::Api;
 # =====================================================================
 # Capa HTTP.
 #
-# Es la unica capa que sabe que existe el protocolo: lee el request,
-# despacha segun el metodo, y traduce el resultado (o el error de
-# negocio) a un status code y un JSON.
+# Es la unica capa que sabe que existe el protocolo: lee el pedido,
+# elige el handler segun el metodo, y traduce el resultado o el error
+# a un status code y un JSON.
 #
-# Todo lo que esta debajo -- servicios, repositorios -- funciona igual
-# si manana esto se expone por linea de comandos o por una cola de
-# mensajes. Por eso el mapa codigo -> status vive aca y no en
-# UP::Error.
+# Por eso el mapa codigo -> status vive aca y no en UP::Error: lo que
+# esta debajo funciona igual sin HTTP.
 # =====================================================================
 
 use strict;
@@ -27,8 +25,7 @@ use UP::Error;
 #   400 el pedido esta mal formado o los datos no pasan validacion
 #   404 el recurso pedido no existe
 #   405 el metodo no aplica a este endpoint
-#   409 conflicto con el estado actual: es el caso de los duplicados,
-#       que es justamente lo que pide la consigna
+#   409 conflicto: es el caso de los duplicados que pide la consigna
 # ---------------------------------------------------------------------
 my %ESTADO_POR_CODIGO = (
     VALIDACION           => 400,
@@ -50,9 +47,8 @@ my %TEXTO_ESTADO = (
     500 => 'Internal Server Error',
 );
 
-# Cuerpo maximo aceptado. Sin este limite, un pedido con un
-# Content-Length enorme haria que el proceso intente reservar toda esa
-# memoria antes de rechazarlo.
+# Cuerpo maximo aceptado. Sin el limite, un Content-Length enorme
+# haria que el proceso reserve toda esa memoria antes de rechazarlo.
 my $MAXIMO_CUERPO = 64 * 1024;
 
 my $ESTADO_SALIDA = 200;
@@ -95,9 +91,9 @@ sub _desescapar {
     $texto =~ tr/+/ /;
     $texto =~ s/%([0-9A-Fa-f]{2})/chr( hex($1) )/ge;
 
-    # Lo anterior deja bytes; el resto del programa trabaja con
-    # caracteres. Si la secuencia no es UTF-8 valido se reemplaza en
-    # vez de morir: un query string roto no deberia tumbar el endpoint.
+    # Lo de arriba deja bytes y el resto del programa usa caracteres.
+    # Si la secuencia no es UTF-8 valido se reemplaza en vez de morir:
+    # un query string roto no deberia tumbar el endpoint.
     return decode_utf8( $texto, 0 );
 }
 
@@ -134,9 +130,9 @@ sub cuerpo_json {
 #         POST => sub { ... },
 #     });
 #
-# El handler devuelve la estructura de datos a serializar. Cualquier
-# error de negocio que lance sale como JSON con el status que
-# corresponda; cualquier otra excepcion sale como 500 generico.
+# El handler devuelve la estructura a serializar. Si lanza un error de
+# negocio, sale como JSON con el status que corresponda; cualquier otra
+# excepcion sale como 500 generico.
 # =====================================================================
 sub despachar {
     my ( $class, $manejadores ) = @_;
@@ -174,9 +170,9 @@ sub _responder_error {
 
     # Excepcion inesperada: un bug, o la base caida.
     #
-    # El detalle va al error_log de Apache y NO al cliente: esos
-    # mensajes suelen incluir fragmentos de SQL, rutas del servidor o
-    # la cadena de conexion, que no tienen por que salir a la calle.
+    # El detalle va al error_log de Apache y no al cliente. Esos
+    # mensajes suelen traer fragmentos de SQL, rutas del servidor y la
+    # cadena de conexion.
     my $detalle = "$error";
     $detalle =~ s/\s+$//;
     print STDERR "[UP] error inesperado: $detalle\n";
@@ -196,8 +192,8 @@ sub _responder_error {
 sub _responder {
     my ( $class, $estado, $cuerpo ) = @_;
 
-    # ->utf8 devuelve bytes; ->canonical ordena las claves, lo que hace
-    # que la salida sea estable y comparable entre corridas.
+    # ->utf8 devuelve bytes. ->canonical ordena las claves, asi la
+    # salida es siempre igual y se puede comparar entre corridas.
     my $json = JSON::PP->new->utf8->canonical->encode($cuerpo);
 
     my $texto = $TEXTO_ESTADO{$estado} || 'Status';
@@ -208,11 +204,11 @@ sub _responder {
     print "Content-Type: application/json; charset=utf-8\r\n";
     print "Content-Length: " . length($json) . "\r\n";
 
-    # Que ningun intermediario cachee respuestas de datos.
+    # Que ningun intermediario cachee las respuestas de datos.
     print "Cache-Control: no-store\r\n";
 
-    # Sin esto, un navegador podria interpretar la respuesta como algo
-    # distinto de JSON si el contenido lo confunde.
+    # Que el navegador respete el Content-Type en vez de adivinar el
+    # tipo mirando el contenido.
     print "X-Content-Type-Options: nosniff\r\n";
 
     print "\r\n";

@@ -16,7 +16,7 @@ SET client_encoding TO 'UTF8';
 
 -- ---------------------------------------------------------------------
 -- Rol de la aplicacion.
--- La app NUNCA se conecta como superusuario: solo necesita leer y
+-- La app nunca se conecta como superusuario: solo necesita leer y
 -- escribir sus propias tablas.
 -- ---------------------------------------------------------------------
 DO $$
@@ -33,9 +33,9 @@ $$;
 -- ---------------------------------------------------------------------
 -- Base de datos, con up_app como duena (asi puede crear sus tablas).
 --
--- CREATE DATABASE no puede ir dentro de un bloque DO porque no corre
--- dentro de una transaccion. Por eso se genera la sentencia
--- condicionalmente y se ejecuta con \gexec.
+-- CREATE DATABASE no puede ir dentro de un bloque DO, porque no corre
+-- dentro de una transaccion. Por eso se arma la sentencia con un
+-- SELECT condicional y se ejecuta con \gexec.
 -- ---------------------------------------------------------------------
 SELECT 'CREATE DATABASE inscripciones_up OWNER up_app'
 WHERE NOT EXISTS (

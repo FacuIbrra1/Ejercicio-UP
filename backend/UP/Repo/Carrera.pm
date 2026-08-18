@@ -3,12 +3,11 @@ package UP::Repo::Carrera;
 # =====================================================================
 # Acceso a datos de la tabla "carrera".
 #
-# Solo SQL. Sin validaciones, sin reglas de negocio y sin nada que sepa
-# de HTTP: eso vive en UP::Service::* y en los .cgi respectivamente.
+# Solo SQL. Las validaciones y las reglas viven en UP::Service::*.
 #
-# Todas las funciones reciben el handle como primer argumento en lugar
-# de pedirselo a UP::DB, para que el service pueda pasarles el mismo
-# handle dentro de una transaccion.
+# Todas las funciones reciben el handle como primer argumento en vez
+# de pedirselo a UP::DB, asi el service puede pasarles el mismo handle
+# dentro de una transaccion.
 # =====================================================================
 
 use strict;

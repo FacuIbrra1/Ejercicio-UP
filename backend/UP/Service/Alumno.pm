@@ -50,9 +50,9 @@ sub obtener {
 # ---------------------------------------------------------------------
 # Alta desde el ABM.
 #
-# Pide una carrera igual que el formulario publico: la consigna dice
-# que hay que asignarle una carrera a cada alumno, asi que no tiene
-# sentido poder crear uno suelto.
+# Pide una carrera igual que el formulario publico. La consigna dice
+# que hay que asignarle una carrera a cada alumno, asi que no se puede
+# crear uno suelto.
 # ---------------------------------------------------------------------
 sub crear {
     my ( $class, $datos ) = @_;
@@ -127,9 +127,8 @@ sub modificar {
             UP::Error->lanzar( 'NO_ENCONTRADO', 'El alumno no existe.' )
                 unless UP::Repo::Alumno::buscar_por_id( $dbh, $id );
 
-            # El email propio no cuenta como duplicado: si no se
-            # excluyera su propio id, nadie podria guardar una edicion
-            # en la que no cambio el email.
+            # Se excluye su propio id: si no, nadie podria guardar una
+            # edicion en la que no cambio el email.
             if ( UP::Repo::Alumno::buscar_por_email_excepto( $dbh, $limpios->{email}, $id ) ) {
                 UP::Error->lanzar( 'EMAIL_DUPLICADO',
                     "Ya existe otro alumno con el email $limpios->{email}." );
