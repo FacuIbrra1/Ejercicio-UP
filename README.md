@@ -307,7 +307,7 @@ Está en `admin/`, así que Apache lo aplica a todo lo que cuelga de ahí, **inc
 
 ## 11. Pruebas
 
-Cuatro suites, 108 chequeos, que corren contra la base real y limpian lo que crean.
+Cuatro suites, 111 chequeos, que corren contra la base real y limpian lo que crean.
 
 **Se pueden correr en cualquier momento, con o sin datos cargados.** El último chequeo de cada suite no exige que las tablas estén vacías, sino que compara el estado contra una foto tomada al empezar: lo que se verifica es que la prueba no haya dejado nada atrás, no que la base esté limpia.
 
@@ -332,7 +332,6 @@ perl tests/prueba_seguridad.pl http://localhost/up admin:up2026
 | `prueba_capa_datos.pl` | 20 | repositorios, transacciones, `CASCADE`, UTF-8 |
 | `prueba_negocio.pl` | 25 | validaciones y los cinco códigos de error |
 | `prueba_api.pl` | 31 | los 10 endpoints por HTTP real, con sus status |
-| `prueba_seguridad.pl` | 32 | control de acceso, archivos internos, cabeceras |
+| `prueba_seguridad.pl` | 35 | control de acceso, archivos internos, cabeceras |
 
 Las dos últimas no importan ningún módulo del proyecto: hablan con la aplicación por la red, igual que un navegador, así que también validan la configuración de Apache.
-# Ejercicio-UP
