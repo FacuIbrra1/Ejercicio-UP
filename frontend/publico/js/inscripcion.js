@@ -29,9 +29,6 @@
     var MENSAJE_GENERICO =
         'No pudimos procesar tu inscripción. Probá de nuevo en unos minutos.';
 
-    // A mucha gente el movimiento en pantalla le produce mareo, y lo
-    // configura en su sistema operativo. Si lo pidió, el
-    // desplazamiento va instantáneo en vez de animado.
     function comportamientoScroll() {
         var prefiereQuieto = window.matchMedia
             && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
