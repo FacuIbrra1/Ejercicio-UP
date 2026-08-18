@@ -311,6 +311,18 @@ Cuatro suites, 111 chequeos, que corren contra la base real y limpian lo que cre
 
 **Se pueden correr en cualquier momento, con o sin datos cargados.** El último chequeo de cada suite no exige que las tablas estén vacías, sino que compara el estado contra una foto tomada al empezar: lo que se verifica es que la prueba no haya dejado nada atrás, no que la base esté limpia.
 
+> **En Git Bash no uses `perl` a secas.** Git para Windows trae su propio Perl en `/usr/bin/perl` y se adelanta al de Strawberry en el `PATH`. Ese Perl no tiene `DBI`, así que `prueba_capa_datos` y `prueba_negocio` fallan con `Can't locate DBI.pm in @INC`.
+>
+> El síntoma despista, porque **las otras dos suites sí pasan**: solo usan `HTTP::Tiny`, que viene con cualquier Perl. Dos en verde y dos en rojo parece un bug de la aplicación, y es solo el intérprete equivocado.
+>
+> Desde Git Bash hay que llamar al de Strawberry por su ruta completa:
+>
+> ```bash
+> /c/Strawberry/perl/bin/perl.exe tests/prueba_capa_datos.pl
+> ```
+>
+> Desde **PowerShell o CMD no pasa**: ahí `perl` resuelve directo a Strawberry. Los comandos de abajo están escritos para esas dos consolas.
+
 ```bash
 perl tests/prueba_capa_datos.pl
 ```
