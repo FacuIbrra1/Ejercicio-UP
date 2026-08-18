@@ -4,10 +4,8 @@ package UP::Service::Inscripcion;
 # Reglas de negocio de la inscripcion.
 #
 # Los repositorios de UP::Repo::* son funciones que reciben un $dbh;
-# los servicios son metodos de clase. La diferencia no es capricho: el
-# servicio es el que abre y cierra la transaccion, y les pasa el mismo
-# handle a todos los repos que participan. Quien mira el codigo sabe
-# por la forma de la llamada en que capa esta parado.
+# El servicio es el que abre y cierra la transaccion, y les pasa el mismo
+# handle a todos los repos que participan.
 # =====================================================================
 
 use strict;
@@ -23,8 +21,7 @@ use UP::Service::Validacion;
 
 # Los errores de la base se traducen a errores de negocio con
 # UP::Error->desde_sqlstate, mirando el SQLSTATE y no el texto del
-# mensaje: el texto cambia entre versiones de PostgreSQL y segun el
-# idioma del servidor (el nuestro responde en castellano).
+# mensaje: el texto cambia entre versiones de PostgreSQL.
 
 # =====================================================================
 # Alta desde el formulario publico.

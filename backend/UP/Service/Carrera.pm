@@ -3,7 +3,7 @@ package UP::Service::Carrera;
 # =====================================================================
 # Carreras.
 #
-# Hoy es casi un pasamanos al repositorio: no hay reglas de negocio
+# Es casi un pasamanos al repositorio: no hay reglas de negocio
 # sobre carreras porque el ejercicio no pide un ABM de carreras.
 # Existe igual para que la regla de capas no tenga excepciones: los
 # .cgi hablan siempre con un service, nunca con un repositorio. Si

@@ -5,7 +5,7 @@ package UP::Service::Validacion;
 #
 # Esta es la validacion que manda. La del formulario HTML existe solo
 # para dar feedback rapido: se puede saltear con curl, con la consola
-# del navegador o desactivando JavaScript, asi que no se confia en ella.
+# del navegador o desactivando JavaScript, asi que no confie en ella.
 #
 # Los errores se acumulan y se devuelven todos juntos, en vez de cortar
 # en el primero: si alguien manda tres campos mal, que los vea los tres
@@ -69,10 +69,8 @@ sub validar_alumno {
     }
 
     # --- email -------------------------------------------------------
-    # Validacion deliberadamente laxa: alcanza para descartar lo
-    # groseramente invalido. Intentar validar un email "del todo" con
-    # una expresion regular es un pozo sin fondo, y termina rechazando
-    # direcciones legitimas.
+    # Alcanza para descartar lo groseramente invalido. Intentar validar un email "del todo" con
+    # una expresion regular es un pozo sin fondo, y termina rechazando direcciones legitimas.
     $limpio{email} = _limpiar( $datos->{email} );
     if ( !defined $limpio{email} ) {
         $error{email} = 'El email es obligatorio.';
