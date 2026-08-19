@@ -12,25 +12,25 @@
 (function () {
     'use strict';
 
-    var API_CARRERAS = 'api/carreras.cgi';
-    var API_INSCRIPCIONES = 'api/inscripciones.cgi';
+    const API_CARRERAS = 'api/carreras.cgi';
+    const API_INSCRIPCIONES = 'api/inscripciones.cgi';
 
-    var formulario = document.getElementById('formulario');
-    var selectCarrera = document.getElementById('carrera_id');
-    var botonEnviar = document.getElementById('enviar');
-    var alerta = document.getElementById('alerta');
-    var panelFormulario = document.getElementById('panel-formulario');
-    var panelExito = document.getElementById('panel-exito');
-    var exitoDetalle = document.getElementById('exito-detalle');
-    var botonOtra = document.getElementById('otra');
+    const formulario = document.getElementById('formulario');
+    const selectCarrera = document.getElementById('carrera_id');
+    const botonEnviar = document.getElementById('enviar');
+    const alerta = document.getElementById('alerta');
+    const panelFormulario = document.getElementById('panel-formulario');
+    const panelExito = document.getElementById('panel-exito');
+    const exitoDetalle = document.getElementById('exito-detalle');
+    const botonOtra = document.getElementById('otra');
 
-    var CAMPOS = ['nombre', 'email', 'telefono', 'nacionalidad', 'carrera_id'];
+    const CAMPOS = ['nombre', 'email', 'telefono', 'nacionalidad', 'carrera_id'];
 
-    var MENSAJE_GENERICO =
+    const MENSAJE_GENERICO =
         'No pudimos procesar tu inscripción. Probá de nuevo en unos minutos.';
 
     function comportamientoScroll() {
-        var prefiereQuieto = window.matchMedia
+        const prefiereQuieto = window.matchMedia
             && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         return prefiereQuieto ? 'auto' : 'smooth';
     }
@@ -40,7 +40,7 @@
     function mostrarAlerta(titulo, detalle) {
         alerta.textContent = '';
 
-        var fuerte = document.createElement('strong');
+        const fuerte = document.createElement('strong');
         fuerte.textContent = titulo;
         alerta.appendChild(fuerte);
 
@@ -61,8 +61,8 @@
 
     function limpiarErrores() {
         CAMPOS.forEach(function (campo) {
-            var entrada = document.getElementById(campo);
-            var destino = document.getElementById('error-' + campo);
+            const entrada = document.getElementById(campo);
+            const destino = document.getElementById('error-' + campo);
 
             if (entrada) {
                 entrada.classList.remove('invalido');
@@ -75,11 +75,13 @@
     }
 
     function pintarErrores(campos) {
-        var primero = null;
+        // El único que se reasigna: guarda el primer campo con error
+        // para llevarle el foco al terminar el recorrido.
+        let primero = null;
 
         Object.keys(campos || {}).forEach(function (campo) {
-            var entrada = document.getElementById(campo);
-            var destino = document.getElementById('error-' + campo);
+            const entrada = document.getElementById(campo);
+            const destino = document.getElementById('error-' + campo);
 
             if (entrada) {
                 entrada.classList.add('invalido');
@@ -105,7 +107,7 @@
        separan, la del servidor es la que vale. */
 
     function validar(datos) {
-        var errores = {};
+        const errores = {};
 
         if (!datos.nombre) {
             errores.nombre = 'El nombre es obligatorio.';
@@ -151,51 +153,51 @@
 
     /* --- Carga de carreras ------------------------------------------ */
 
-    function cargarCarreras() {
-        return fetch(API_CARRERAS, { headers: { Accept: 'application/json' } })
-            .then(function (respuesta) {
-                return respuesta.json();
-            })
-            .then(function (cuerpo) {
-                if (!cuerpo || !cuerpo.ok || !Array.isArray(cuerpo.data)) {
-                    throw new Error('respuesta inesperada');
-                }
-
-                selectCarrera.textContent = '';
-
-                var vacia = document.createElement('option');
-                vacia.value = '';
-                vacia.textContent = 'Elegí una carrera…';
-                selectCarrera.appendChild(vacia);
-
-                cuerpo.data.forEach(function (carrera) {
-                    var opcion = document.createElement('option');
-                    opcion.value = carrera.id;
-                    opcion.textContent = carrera.nombre;
-                    selectCarrera.appendChild(opcion);
-                });
-            })
-            .catch(function () {
-                selectCarrera.textContent = '';
-
-                var opcion = document.createElement('option');
-                opcion.value = '';
-                opcion.textContent = 'No se pudieron cargar las carreras';
-                selectCarrera.appendChild(opcion);
-
-                botonEnviar.disabled = true;
-
-                mostrarAlerta(
-                    'No pudimos cargar las carreras. ',
-                    'Recargá la página para volver a intentarlo.'
-                );
+    async function cargarCarreras() {
+        try {
+            const respuesta = await fetch(API_CARRERAS, {
+                headers: { Accept: 'application/json' }
             });
+            const cuerpo = await respuesta.json();
+
+            if (!cuerpo || !cuerpo.ok || !Array.isArray(cuerpo.data)) {
+                throw new Error('respuesta inesperada');
+            }
+
+            selectCarrera.textContent = '';
+
+            const vacia = document.createElement('option');
+            vacia.value = '';
+            vacia.textContent = 'Elegí una carrera…';
+            selectCarrera.appendChild(vacia);
+
+            cuerpo.data.forEach(function (carrera) {
+                const opcion = document.createElement('option');
+                opcion.value = carrera.id;
+                opcion.textContent = carrera.nombre;
+                selectCarrera.appendChild(opcion);
+            });
+        } catch (e) {
+            selectCarrera.textContent = '';
+
+            const opcion = document.createElement('option');
+            opcion.value = '';
+            opcion.textContent = 'No se pudieron cargar las carreras';
+            selectCarrera.appendChild(opcion);
+
+            botonEnviar.disabled = true;
+
+            mostrarAlerta(
+                'No pudimos cargar las carreras. ',
+                'Recargá la página para volver a intentarlo.'
+            );
+        }
     }
 
     /* --- Envío ------------------------------------------------------- */
 
     function manejarErrorDelServidor(cuerpo) {
-        var error = (cuerpo && cuerpo.error) || {};
+        const error = (cuerpo && cuerpo.error) || {};
 
         switch (error.codigo) {
             case 'VALIDACION':
@@ -239,14 +241,14 @@
         panelExito.scrollIntoView({ behavior: comportamientoScroll(), block: 'nearest' });
     }
 
-    function enviar(evento) {
+    async function enviar(evento) {
         evento.preventDefault();
 
         ocultarAlerta();
         limpiarErrores();
 
-        var datos = leerFormulario();
-        var errores = validar(datos);
+        const datos = leerFormulario();
+        const errores = validar(datos);
 
         if (Object.keys(errores).length > 0) {
             pintarErrores(errores);
@@ -256,44 +258,42 @@
         botonEnviar.disabled = true;
         botonEnviar.textContent = 'Enviando…';
 
-        fetch(API_INSCRIPCIONES, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json'
-            },
-            body: JSON.stringify(datos)
-        })
-            .then(function (respuesta) {
-                // Si el servidor devolviera una página de error de
-                // Apache en vez de JSON, .json() explota. Se atrapa
-                // acá para mostrar un mensaje entendible y no un
-                // "Unexpected token <" en la consola.
-                return respuesta.json().then(
-                    function (cuerpo) {
-                        return { ok: respuesta.ok, cuerpo: cuerpo };
-                    },
-                    function () {
-                        return { ok: false, cuerpo: null };
-                    }
-                );
-            })
-            .then(function (resultado) {
-                if (resultado.ok && resultado.cuerpo && resultado.cuerpo.ok) {
-                    mostrarExito(resultado.cuerpo.data, datos.email);
-                } else {
-                    manejarErrorDelServidor(resultado.cuerpo);
-                }
-            })
-            .catch(function () {
-                // Sin red, servidor caído o pedido cancelado.
-                mostrarAlerta('No pudimos conectarnos con el servidor. ',
-                    'Revisá tu conexión y volvé a intentar.');
-            })
-            .then(function () {
-                botonEnviar.disabled = false;
-                botonEnviar.textContent = 'Enviar inscripción';
+        try {
+            const respuesta = await fetch(API_INSCRIPCIONES, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json'
+                },
+                body: JSON.stringify(datos)
             });
+
+            // Si el servidor devolviera una página de error de Apache
+            // en vez de JSON, .json() explota. Se atrapa acá para
+            // mostrar un mensaje entendible y no un "Unexpected token
+            // <" en la consola.
+            let cuerpo = null;
+            try {
+                cuerpo = await respuesta.json();
+            } catch (e) {
+                cuerpo = null;
+            }
+
+            if (respuesta.ok && cuerpo && cuerpo.ok) {
+                mostrarExito(cuerpo.data, datos.email);
+            } else {
+                manejarErrorDelServidor(cuerpo);
+            }
+        } catch (e) {
+            // Sin red, servidor caído o pedido cancelado.
+            mostrarAlerta('No pudimos conectarnos con el servidor. ',
+                'Revisá tu conexión y volvé a intentar.');
+        } finally {
+            // finally corre pase lo que pase, así que el botón se
+            // rehabilita incluso si algo falló arriba.
+            botonEnviar.disabled = false;
+            botonEnviar.textContent = 'Enviar inscripción';
+        }
     }
 
     /* --- Volver al formulario ---------------------------------------- */
@@ -320,14 +320,14 @@
 
     // Al corregir un campo marcado, se le saca la marca en el momento.
     CAMPOS.forEach(function (campo) {
-        var entrada = document.getElementById(campo);
+        const entrada = document.getElementById(campo);
         if (!entrada) {
             return;
         }
         entrada.addEventListener('input', function () {
             entrada.classList.remove('invalido');
             entrada.removeAttribute('aria-invalid');
-            var destino = document.getElementById('error-' + campo);
+            const destino = document.getElementById('error-' + campo);
             if (destino) {
                 destino.textContent = '';
             }
