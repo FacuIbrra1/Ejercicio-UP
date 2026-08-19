@@ -6,6 +6,27 @@ Aplicación web con una parte pública, donde un alumno se inscribe a una carrer
 
 ---
 
+## Antes de empezar
+
+**1. Ubicá el proyecto donde quieras**, pero anotá la ruta completa: hace falta en dos lugares de la configuración de Apache.
+
+```bash
+git clone https://github.com/FacuIbrra1/Ejercicio-UP.git
+```
+
+**2. En Windows, hacé toda la instalación desde PowerShell o CMD, no desde Git Bash.**
+
+No es una preferencia. Git para Windows trae su propio Perl en `/usr/bin/perl` y se adelanta al de Strawberry en el `PATH`. Eso rompe dos cosas en silencio:
+
+| Comando | En PowerShell | En Git Bash |
+|---|---|---|
+| `cpanm DBD::Pg` | instala en Strawberry ✅ | instala en el Perl de Git ❌ |
+| `perl tests/…` | usa Strawberry ✅ | falla con `Can't locate DBI.pm` ❌ |
+
+El caso de `cpanm` es el peor, porque **no da error**: instala el módulo en un Perl que la aplicación nunca usa, y después los CGI fallan sin que se entienda por qué.
+
+---
+
 ## 1. Requisitos
 
 | Componente | Versión probada | Para qué |
@@ -80,13 +101,21 @@ db_pass = up_app_dev
 
 ## 4. Apache
 
-Copiar el archivo de ejemplo de configuración a `conf/extra/` de Apache y agregar al final de `httpd.conf`:
+El repositorio trae la configuración lista en **`config/httpd-up.conf.example`**. Copiala a la carpeta `conf/extra/` de Apache con el nombre `httpd-up.conf`:
+
+```bash
+copy config\httpd-up.conf.example C:\xampp\apache\conf\extra\httpd-up.conf
+```
+
+Editá ese archivo y reemplazá las cuatro rutas por la ubicación real del proyecto (aparecen en los dos `Alias` y en los dos `<Directory>`).
+
+Después agregá esta línea al final de `C:\xampp\apache\conf\httpd.conf`:
 
 ```apache
 Include "conf/extra/httpd-up.conf"
 ```
 
-El contenido de `httpd-up.conf`, ajustando las rutas:
+Este es el contenido, por si preferís escribirlo a mano:
 
 ```apache
 Alias /up/admin "RUTA/DEL/PROYECTO/frontend/admin"
@@ -156,15 +185,19 @@ Esperado: `HTTP/1.1 200 OK`.
 
 ## 5. Acceso a la parte privada
 
-```bash
-htpasswd -B config/.htpasswd admin
-```
-
-O usar el archivo de ejemplo, que ya trae el usuario **`admin`** con la contraseña **`up2026`**:
+Lo más rápido es usar el archivo de ejemplo, que ya trae el usuario **`admin`** con la contraseña **`up2026`**:
 
 ```bash
-cp config/.htpasswd.example config/.htpasswd
+copy config\.htpasswd.example config\.htpasswd
 ```
+
+Para generar uno propio con otra contraseña:
+
+```bash
+"C:\xampp\apache\bin\htpasswd.exe" -B config\.htpasswd admin
+```
+
+> **`htpasswd` no está en el `PATH`**, igual que `httpd`: XAMPP no agrega su carpeta `bin`. Hay que llamarlo por la ruta completa.
 
 Después hay que poner la **ruta absoluta** a ese archivo en `frontend/admin/.htaccess`:
 
@@ -182,6 +215,40 @@ El `-B` usa bcrypt en lugar del MD5 que `htpasswd` trae por defecto: es lento a 
 |---|---|---|
 | Formulario de inscripción | `http://localhost/up/` | público |
 | Administración (ABM) | `http://localhost/up/admin/` | `admin` / `up2026` |
+
+### Verificación rápida
+
+Tres comandos que prueban la cadena entera —Apache, CGI, Perl, PostgreSQL— sin abrir el navegador:
+
+```bash
+curl -i http://localhost/up/api/carreras.cgi
+```
+
+Esperado: `200 OK` y un JSON con 12 carreras. Si falla acá, el problema está en Apache o en `DBD::Pg`.
+
+```bash
+curl -i http://localhost/up/admin/api/alumnos.cgi
+```
+
+Esperado: `401 Unauthorized`. Confirma que la parte privada está protegida.
+
+```bash
+curl -i -u admin:up2026 http://localhost/up/admin/api/alumnos.cgi
+```
+
+Esperado: `200 OK`. Confirma que las credenciales funcionan.
+
+Si los tres dan lo esperado, la instalación está completa.
+
+#### Si algo falla
+
+| Síntoma | Causa habitual |
+|---|---|
+| `Connection refused` | Apache no está corriendo |
+| `500 Internal Server Error` | Ver `C:\xampp\apache\logs\error.log`. Suele ser `DBD::Pg` o `config/app.conf` |
+| `load_file: no se puede encontrar el módulo` | Apache arrancó sin `C:\Strawberry\c\bin` en el `PATH`; levantalo desde el XAMPP Control Panel |
+| `404` en `/up/` | El `Alias` de `httpd-up.conf` apunta a una ruta que no existe |
+| `500` al entrar a `/up/admin/` | La ruta de `AuthUserFile` en `frontend/admin/.htaccess` está mal |
 
 ---
 
