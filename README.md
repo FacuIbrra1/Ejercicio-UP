@@ -20,8 +20,8 @@ No es una preferencia. Git para Windows trae su propio Perl en `/usr/bin/perl` y
 
 | Comando | En PowerShell | En Git Bash |
 |---|---|---|
-| `cpanm DBD::Pg` | instala en Strawberry ✅ | instala en el Perl de Git ❌ |
-| `perl tests/…` | usa Strawberry ✅ | falla con `Can't locate DBI.pm` ❌ |
+| `cpanm DBD::Pg` | instala en Strawberry  | instala en el Perl de Git  |
+| `perl tests/…` | usa Strawberry  | falla con `Can't locate DBI.pm`  |
 
 El caso de `cpanm` es el peor, porque **no da error**: instala el módulo en un Perl que la aplicación nunca usa, y después los CGI fallan sin que se entienda por qué.
 
